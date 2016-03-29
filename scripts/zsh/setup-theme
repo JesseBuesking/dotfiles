@@ -8,8 +8,9 @@ setup_theme() {
 
   if [ ! -f "$THEME.sh" ]
   then
+    info 'setup theme'
     # get and load the theme
-    wget https://raw.githubusercontent.com/NLKNguyen/papercolor/master/gnome-terminal/$THEME.sh
+    wget -qO "$THEME.sh" https://raw.githubusercontent.com/NLKNguyen/papercolor/master/gnome-terminal/base16-papercolor-dark.sh
     source "$THEME.sh"
 
     # set the font and font size

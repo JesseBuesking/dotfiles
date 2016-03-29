@@ -1,3 +1,6 @@
+export PATH="./bin:/usr/local/bin:/usr/local/sbin:$ZSH/bin:$PATH"
+export MANPATH="/usr/local/man:/usr/local/mysql/man:/usr/local/git/man:$MANPATH"
+
 # ==============================================================================
 # Anaconda
 # ==============================================================================
@@ -45,22 +48,3 @@ export DYLD_LIBRARY_PATH="$HOME/torch/install/lib:$DYLD_LIBRARY_PATH"
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
-
-# ==============================================================================
-# Personal python repositories
-# ==============================================================================
-PYTHONREPOS="$HOME/repositories/python"
-export PYTHONPATH="$PYTHONREPOS/bbds:$PYTHONREPOS/pylearn2:$PYTHONREPOS/suggs:$PYTHONREPOS/python_speech_features:$PYTHONREPOS/sloth:$PYTHONPATH"
-
-# ==============================================================================
-# Project specific exports
-# ==============================================================================
-export BBDS_PROJECT_PATH=/home/jbuesking/bbdsdata
-export LOG_CFG=/home/jbuesking/repositories/python/bbds/logging.json
-
-# ==============================================================================
-# Miscellaneous
-# ==============================================================================
-export INSTALL_PREFIX=/usr/local                  # set the default install path
-export TZ='US/Pacific'                                        # set the timezone
-export DISPLAY=:0                                      # set the primary display
