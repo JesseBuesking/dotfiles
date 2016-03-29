@@ -5,7 +5,7 @@
     autocrlf = COREAUTOCRLF
     ignorecase = true
     # insanely beautiful diffs
-    pager = bash -lc 'diff-highlight | strip_diff_leading_symbols | less -r' -
+    pager = bash -lc 'diff-highlight | less -r' -
 [difftool "kdiff3"]
     trustExitCode = false
 [difftool]

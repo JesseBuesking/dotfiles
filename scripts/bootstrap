@@ -35,6 +35,9 @@ source scripts/anaconda/setup-anaconda-packages
 setup_anaconda
 setup_anaconda_packages
 
+source scripts/python/setup-python
+setup_python
+
 source scripts/zsh/setup-antigen
 setup_antigen
 

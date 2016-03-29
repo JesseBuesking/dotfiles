@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+function setup_python () {
+    info 'setup python'
+    pip install diff-highlight
+}
