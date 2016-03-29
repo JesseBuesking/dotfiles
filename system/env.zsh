@@ -7,8 +7,8 @@ export PYTHONPATH="$PYTHONREPOS/bbds:$PYTHONREPOS/pylearn2:$PYTHONREPOS/suggs:$P
 # ==============================================================================
 # Project specific exports
 # ==============================================================================
-export BBDS_PROJECT_PATH=/home/jbuesking/bbdsdata
-export LOG_CFG=/home/jbuesking/repositories/python/bbds/logging.json
+export BBDS_PROJECT_PATH=$HOME/bbdsdata
+export LOG_CFG=$HOME/repositories/python/bbds/logging.json
 
 # ==============================================================================
 # Miscellaneous

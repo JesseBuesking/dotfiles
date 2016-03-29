@@ -4,7 +4,7 @@ export MANPATH="/usr/local/man:/usr/local/mysql/man:/usr/local/git/man:$MANPATH"
 # ==============================================================================
 # Anaconda
 # ==============================================================================
-export PATH="/home/jbuesking/anaconda2/bin:$PATH"
+export PATH="$HOME/anaconda2/bin:$PATH"
 
 # ==============================================================================
 # CUDA
@@ -40,7 +40,7 @@ export CUDNN_ENABLED=1
 export PATH="$HOME/torch/install/bin:$PATH"
 export LD_LIBRARY_PATH="$HOME/torch/install/lib:/usr/local/lib:$LD_LIBRARY_PATH"
 export DYLD_LIBRARY_PATH="$HOME/torch/install/lib:$DYLD_LIBRARY_PATH"
-. /home/jbuesking/torch/install/bin/torch-activate
+. "$HOME/torch/install/bin/torch-activate"
 #
 # ==============================================================================
 # Ruby
