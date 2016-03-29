@@ -171,7 +171,7 @@ let g:EasyMotion_smartcase = 1
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
-set noexpandtab
+set expandtab
 set colorcolumn=81
 highlight ColorColumn ctermbg=darkgray
 
