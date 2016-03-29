@@ -27,6 +27,9 @@ fail () {
   exit
 }
 
+source scripts/git/setup-gitconfig
+setup_gitconfig
+
 source scripts/anaconda/setup-anaconda
 source scripts/anaconda/setup-anaconda-packages
 setup_anaconda
@@ -37,9 +40,6 @@ setup_antigen
 
 source scripts/zsh/setup-theme
 setup_theme
-
-source scripts/git/setup-gitconfig
-setup_gitconfig
 
 source scripts/dot/setup-dotfiles
 setup_dotfiles
