@@ -1,0 +1,8 @@
+#!/bin/bash
+
+filespace () {
+    # get all files recursively
+    # sort smallest to largest
+    # strip the last line (full folder size)
+    find $1 -type f -exec du -ah {} + | sort -h | tail -n 100
+}

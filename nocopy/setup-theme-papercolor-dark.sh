@@ -2,6 +2,8 @@
 # Base16 PaperColor-Dark - Gnome Terminal color scheme install script
 # Nguyen Nguyen (http://github.com/NLKNguyen)
 
+set -e
+
 [[ -z "$PROFILE_NAME" ]] && PROFILE_NAME="Base 16 PaperColor Dark"
 [[ -z "$PROFILE_SLUG" ]] && PROFILE_SLUG="base-16-papercolor-dark"
 [[ -z "$DCONF" ]] && DCONF=dconf

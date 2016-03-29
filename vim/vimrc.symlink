@@ -237,3 +237,8 @@ let vim_markdwon_preview_toggle=2
 " make ctrlp follow NERDTree's current working directory
 let g:NERDTreeChDirMode       = 2
 let g:ctrlp_working_path_mode = 'rw'
+
+" load NERDTree by default
+autocmd VimEnter * NERDTree
+" put the cursor in the other window
+autocmd VimEnter * wincmd p

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+dirspace () {
+    # get all folders (depth 1)
+    # sort smallest to largest
+    # strip the last line (full folder size)
+    du -h --max-depth=1 $1 | sort -h | head -n -1 | tail -n 100
+}
