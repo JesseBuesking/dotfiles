@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+setup_theme() {
+  source nocopy/setup-theme-papercolor-dark.sh
+}

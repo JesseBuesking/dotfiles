@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+psaux () {
+    ps aux | grep -v "awk NR == 1 || /$1/" | awk "NR == 1 || /$1/"
+}

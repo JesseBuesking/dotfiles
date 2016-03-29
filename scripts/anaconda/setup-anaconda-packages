@@ -1,0 +1,9 @@
+#!/bin/bash
+
+function setup_anaconda_packages () {
+  conda install \
+      scikit-learn \
+      scikit-image \
+      theano \
+      -y
+}

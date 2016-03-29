@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+setup_antigen () {
+  if [ ! -f antigen.zsh ]
+  then
+    info 'setup antigen'
+    wget https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh
+    source antigen.zsh
+  fi
+}

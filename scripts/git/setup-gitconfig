@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+setup_gitconfig () {
+  if [ ! -f git/gitconfig.symlink ]
+  then
+    info 'setup gitconfig'
+
+    SYSTEM=$(uname -s)
+    core_autocrlf="false"
+    if [ "$SYSTEM" = "Linux" ]
+    then
+      core_autocrlf="input"
+    fi
+
+    git_credential='cache'
+    if [ "$SYSTEM" = "Darwin" ]
+    then
+      git_credential='osxkeychain'
+    fi
+
+    user ' - What is your github author name?'
+    read git_authorname
+    user ' - What is your github author email?'
+    read git_authoremail
+
+    sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" -e "s/COREAUTOCRLF/$core_autocrlf/g" git/gitconfig.symlink.example > git/gitconfig.symlink
+
+    success 'gitconfig'
+  fi
+}

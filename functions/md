@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#
+# This lets you make a directory and cd into it in one command.
+
+function md() {
+    mkdir -p "$@" && cd "$@"
+}

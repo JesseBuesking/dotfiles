@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+stracename () {
+    sudo strace -p `ps aux | grep -v grep | grep "$1" | awk '{print $2}' | awk 'NR == 1'`
+}

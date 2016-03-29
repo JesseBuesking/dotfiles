@@ -1,64 +1,64 @@
 [user]
-	name = AUTHORNAME
-	email = AUTHOREMAIL
+    name = AUTHORNAME
+    email = AUTHOREMAIL
 [core]
-	autocrlf = COREAUTOCRLF
-	ignorecase = true
-	# insanely beautiful diffs
+    autocrlf = COREAUTOCRLF
+    ignorecase = true
+    # insanely beautiful diffs
     pager = bash -lc 'diff-highlight | strip_diff_leading_symbols | less -r' -
 [difftool "kdiff3"]
-	trustExitCode = false
+    trustExitCode = false
 [difftool]
-	prompt = false
+    prompt = false
 [diff]
-	tool = kdiff3
-	guitool = kdiff3
+    tool = kdiff3
+    guitool = kdiff3
 [mergetool "kdiff3"]
-	trustExitCode = false
+    trustExitCode = false
 [mergetool]
-	prompt = false
+    prompt = false
 [merge]
-	tool = kdiff3
-	guitool = kdiff3
+    tool = kdiff3
+    guitool = kdiff3
 [credential]
-	helper = GIT_CREDENTIAL_HELPER
+    helper = GIT_CREDENTIAL_HELPER
 [alias]
-	st = status -sb
-	apply-gitignore = !git ls-files -ci --exclude-standard -z | xargs -0r git rm --cached
-	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold cyan)<%an>%Creset' --abbrev-commit --date=relative
-	lgs = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold cyan)<%an>%Creset' --abbrev-commit --date=relative -n 10
-	lgb = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold cyan)<%an>%Creset' --abbrev-commit --date=relative -n 50
-	standup = "!git log --since yesterday --author `git config user.email` --abbrev-commit --date=relative --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold cyan)<%an>%Creset'"
+    st = status -sb
+    apply-gitignore = !git ls-files -ci --exclude-standard -z | xargs -0r git rm --cached
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold cyan)<%an>%Creset' --abbrev-commit --date=relative
+    lgs = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold cyan)<%an>%Creset' --abbrev-commit --date=relative -n 10
+    lgb = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold cyan)<%an>%Creset' --abbrev-commit --date=relative -n 50
+    standup = "!git log --since yesterday --author `git config user.email` --abbrev-commit --date=relative --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold cyan)<%an>%Creset'"
 
     co = checkout
     ec = config --global -e
     up = "!f() { git remote prune ${1-origin} && git pull --rebase ${1-origin} ${2-master} && git submodule update --init --recursive; }; f"
     cm = !git add -A && git commit -m
     save = !git add -A && git commit -m 'SAVEPOINT'
-    wip = !git add -u && git commit -m "WIP" 
+    wip = !git add -u && git commit -m "WIP"
     undo = reset HEAD~1 --mixed
     amend = commit -a --amend
     wipe = !git add -A && git commit -qm 'WIPE SAVEPOINT' && git reset HEAD~1 --hard
     bclean = "!f() { git branch --merged ${1-master} | grep -v " ${1-master}$" | xargs -r git branch -d; }; f"
     bdone = "!f() { git checkout ${2-master} && git up ${1-origin} ${2-master} && git bclean ${2-master}; }; f"
 [color "branch"]
-	ui = true
-	current = cyan bold
-	local = cyan
-	remote = red
+    ui = true
+    current = cyan bold
+    local = cyan
+    remote = red
 [color "status"]
-	added = bold green
-	changed = cyan
-	untracked = bold magenta
-	deleted = bold red
+    added = bold green
+    changed = cyan
+    untracked = bold magenta
+    deleted = bold red
 [branch]
-	autosetuprebase = always
+    autosetuprebase = always
 [help]
-	autocorrect = 1
+    autocorrect = 1
 [rerere]
-	enabled = true
+    enabled = true
 [color "diff-highlight"]
-	oldNormal = "red bold"
-	oldHighlight = "red bold 52"
-	newNormal = "green bold"
-	newHighlight = "green bold 22"
+    oldNormal = "red bold"
+    oldHighlight = "red bold 52"
+    newNormal = "green bold"
+    newHighlight = "green bold 22"

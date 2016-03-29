@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# Copies with a progress bar.
+
+function cpv () {
+    rsync \
+        -poghb \
+        --human-readable \
+        --backup-dir=/tmp/rsync \
+        -e /dev/null \
+        --progress $1 $2
+}
