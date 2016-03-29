@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+function strip_diff_leading_symbols(){
+    color_code_regex="(\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K])"
+    rulez=`rule`
+
+    # simplify the unified patch diff header
+    sed -r "s/^((\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]))diff --git .*$//g" | \
+    sed -r "s/^((\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]))index .*$/\n\1======/g" | \
+    sed -r "s/^((\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]))\+\+\+(.*)$/\1+++\5\n\1======\x1B\[m/g" | \
+
+    # actually strips the leading symbols
+    sed -r "s/^((\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]))[\+\-]/\1 /g"
+}

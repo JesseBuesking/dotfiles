@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#
+# Print a horizontal rule.
+
+rule () {
+	printf "%$(tput cols)s\n"|tr " " "─"}}
+}
