@@ -39,4 +39,18 @@ unset config_files
 
 # load ssh keys
 eval "$(ssh-agent -s)" > /dev/null 2>&1
-ssh-add ~/.ssh/github > /dev/null 2>&1
+
+if [ -f "$HOME/.ssh/github" ]
+then
+  ssh-add "$HOME/.ssh/github" > /dev/null 2>&1
+fi
+
+if [ -f "$HOME/.ssh/classic-ubuntu-1404" ]
+then
+  ssh-add "$HOME/.ssh/classic-ubuntu-1404" > /dev/null 2>&1
+fi
+
+if [ -f "$HOME/.ssh/home.pem" ]
+then
+  ssh-add "$HOME/.ssh/home.pem" > /dev/null 2>&1
+fi
