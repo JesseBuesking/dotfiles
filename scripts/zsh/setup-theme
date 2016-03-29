@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
 setup_theme() {
-  source scripts/zsh/THEME-papercolor-dark.sh
+  # this is the theme
+  THEME=base-16-papercolor-dark
+  # the slug has an extra "-dark" appended (see the actual downloaded file)
+  SLUG="$THEME-dark"
+
+  if [ ! -f "$THEME.sh" ]
+  then
+    # get and load the theme
+    wget https://raw.githubusercontent.com/NLKNguyen/papercolor/master/gnome-terminal/$THEME.sh
+    source "$THEME.sh"
+
+    # set the font and font size
+    gconftool-2 --set /apps/gnome-terminal/profiles/$SLUG/font --type=string "Droid Sans Mono 11"
+
+    # choose this profile as the default
+    gconftool-2 --set --type string /apps/gnome-terminal/global/default_profile $SLUG
+  fi
 }
