@@ -40,7 +40,11 @@ export CUDNN_ENABLED=1
 export PATH="$HOME/torch/install/bin:$PATH"
 export LD_LIBRARY_PATH="$HOME/torch/install/lib:/usr/local/lib:$LD_LIBRARY_PATH"
 export DYLD_LIBRARY_PATH="$HOME/torch/install/lib:$DYLD_LIBRARY_PATH"
-. "$HOME/torch/install/bin/torch-activate"
+
+if [ -f "$HOME/torch/install/bin/torch-activate" ]
+then
+  . "$HOME/torch/install/bin/torch-activate"
+fi
 #
 # ==============================================================================
 # Ruby
