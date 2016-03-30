@@ -6,6 +6,7 @@
     ignorecase = true
     # insanely beautiful diffs
     pager = bash -lc 'diff-highlight | less -r' -
+	editor = gvim -f
 [difftool "kdiff3"]
     trustExitCode = false
 [difftool]
