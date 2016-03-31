@@ -2,7 +2,8 @@ source $ZSH/antigen.zsh
 
 antigen use oh-my-zsh
 
-antigen bundle git
+# adds aliases I don't care for...
+#antigen bundle git
 
 #antigen theme robbyrussell
 antigen bundle mafredri/zsh-async

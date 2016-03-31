@@ -2,5 +2,5 @@
 
 function setup_python () {
     info 'setup python'
-    pip install diff-highlight
+    pip install diff-highlight nvidia-ml-py
 }
