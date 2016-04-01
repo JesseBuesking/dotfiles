@@ -246,3 +246,7 @@ let g:ctrlp_working_path_mode = 'rw'
 autocmd VimEnter * NERDTree
 " put the cursor in the other window
 autocmd VimEnter * wincmd p
+
+if $COLORTERM == 'gnome-terminal'
+  set t_Co=256
+endif

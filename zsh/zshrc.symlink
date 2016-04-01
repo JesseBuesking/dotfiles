@@ -54,3 +54,9 @@ if [ -f "$HOME/.ssh/home.pem" ]
 then
   ssh-add "$HOME/.ssh/home.pem" > /dev/null 2>&1
 fi
+
+# Set proper $TERM if we are running gnome-terminal
+if [ "$COLORTERM" = "gnome-terminal" ]
+then
+    export TERM=gnome-256color
+fi

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+watchfunc () {
+  delay=$1
+  func=$2
+  shift
+  shift
+  method="zsh -c \"source $HOME/.dotfiles/functions/$func; $func $@\""
+  #echo "method is $method"
+  watch -n $delay $method
+}
