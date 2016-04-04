@@ -2,6 +2,11 @@
 
 function setup_python () {
     info 'setup python'
-    pip install diff-highlight nvidia-ml-py dbgp vim-debug
+    pip install diff-highlight nvidia-ml-py
     pip install --upgrade http://github.com/JesseBuesking/wwtw/zipball/master
+    # need to install these on the system's pip (since that's what vim
+    # will be loading up)
+    /usr/bin/python -m pip install dbgp vim-debug
+    # need to call this to actually install vim-debug (see the docs)
+    install-vim-debug.py
 }
