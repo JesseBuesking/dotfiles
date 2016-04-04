@@ -5,5 +5,11 @@ function setup_anaconda_packages () {
       scikit-learn \
       scikit-image \
       theano \
+      joblib \
+      seaborn \
+      -y
+  conda install -c https://conda.anaconda.org/mutirri \
+      pyaudio \
+      pudb \
       -y
 }

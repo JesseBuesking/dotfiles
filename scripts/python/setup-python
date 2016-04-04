@@ -2,5 +2,6 @@
 
 function setup_python () {
     info 'setup python'
-    pip install diff-highlight nvidia-ml-py
+    pip install diff-highlight nvidia-ml-py dbgp vim-debug
+    pip install --upgrade http://github.com/JesseBuesking/wwtw/zipball/master
 }
