@@ -12,4 +12,7 @@ function setup_anaconda_packages () {
       pyaudio \
       pudb \
       -y
+    conda install -c https://conda.anaconda.org/auto \
+      tqdm \
+      -y
 }
