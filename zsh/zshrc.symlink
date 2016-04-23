@@ -55,6 +55,11 @@ then
   ssh-add "$HOME/.ssh/home.pem" > /dev/null 2>&1
 fi
 
+if [ -f "$HOME/.ssh/surface_rsa" ]
+then
+  ssh-add "$HOME/.ssh/surface_rsa" > /dev/null 2>&1
+fi
+
 ## Set proper $TERM if we are running gnome-terminal
 #if [ "$COLORTERM" = "gnome-terminal" ]
 #then
