@@ -250,3 +250,11 @@ autocmd VimEnter * wincmd p
 if $COLORTERM == 'gnome-terminal'
   set t_Co=256
 endif
+
+" LaTeX (rubber) macro for compiling
+nnoremap <leader>ll :w<CR>:!rubber --pdf --warn all %<CR><CR>
+
+" View PDF macro; '%:r' is current file's root (base) name.
+nnoremap <leader>lv :!gv --watch %:r.pdf &<CR><CR>
+
+"nnoremap <leader>lp :execute "normal <leader>ll <leader>lv"<CR>
