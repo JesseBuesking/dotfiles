@@ -1,6 +1,8 @@
 [user]
     name = AUTHORNAME
     email = AUTHOREMAIL
+[commit]
+    gpgsign = true
 [core]
     autocrlf = COREAUTOCRLF
     ignorecase = true
