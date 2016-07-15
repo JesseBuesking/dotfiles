@@ -37,14 +37,14 @@ export CUDNN_ENABLED=1
 # ==============================================================================
 # Torch
 # ==============================================================================
-export PATH="$HOME/torch/install/bin:$PATH"
-export LD_LIBRARY_PATH="$HOME/torch/install/lib:/usr/local/lib:$LD_LIBRARY_PATH"
-export DYLD_LIBRARY_PATH="$HOME/torch/install/lib:$DYLD_LIBRARY_PATH"
+#export PATH="$HOME/torch/install/bin:$PATH"
+#export LD_LIBRARY_PATH="$HOME/torch/install/lib:/usr/local/lib:$LD_LIBRARY_PATH"
+#export DYLD_LIBRARY_PATH="$HOME/torch/install/lib:$DYLD_LIBRARY_PATH"
 
-if [ -f "$HOME/torch/install/bin/torch-activate" ]
-then
-  . "$HOME/torch/install/bin/torch-activate"
-fi
+#if [ -f "$HOME/torch/install/bin/torch-activate" ]
+#then
+#  . "$HOME/torch/install/bin/torch-activate"
+#fi
 #
 # ==============================================================================
 # Ruby
@@ -52,3 +52,9 @@ fi
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+
+# ==============================================================================
+# GO
+# ==============================================================================
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin

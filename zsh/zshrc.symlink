@@ -52,8 +52,8 @@ then
   ssh-add "$HOME/.ssh/surface_rsa" > /dev/null 2>&1
 fi
 
-## Set proper $TERM if we are running gnome-terminal
-#if [ "$COLORTERM" = "gnome-terminal" ]
-#then
-#    export TERM=gnome-256color
-#fi
+# Set proper $TERM if we are running gnome-terminal
+if [ "$COLORTERM" = "gnome-terminal" ]
+then
+    export TERM=gnome-256color
+fi
