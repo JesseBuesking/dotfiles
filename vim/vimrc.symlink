@@ -259,3 +259,19 @@ nnoremap <leader>ll :w<CR>:!rubber --pdf --warn all %<CR><CR>
 nnoremap <leader>lv :!gv --watch %:r.pdf &<CR><CR>
 
 "nnoremap <leader>lp :execute "normal <leader>ll <leader>lv"<CR>
+
+" stop overwriting text when pasting!
+" from: http://stackoverflow.com/a/290723/435460
+" I haven't found how to hide this function (yet)
+function! RestoreRegister()
+  let @" = s:restore_reg
+  return ''
+endfunction
+
+function! s:Repl()
+    let s:restore_reg = @"
+    return "p@=RestoreRegister()\<cr>"
+endfunction
+
+" NB: this supports "rp that replaces the selection by the contents of @r
+vnoremap <silent> <expr> p <sid>Repl()
