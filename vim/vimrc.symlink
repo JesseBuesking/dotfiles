@@ -190,8 +190,8 @@ syntax on
 " show line numbers
 :set number
 
-" hide .pyc files from nerdtree
-let NERDTreeIgnore=['\.pyc$']                         " ignore files in NERDTree
+" ignore files in NERDTree
+let NERDTreeIgnore=['\.pyc$', '__pycache__', '.ropeproject', '.cache', '.git']
 let NERDTreeShowHidden=1                                       " show .gitignore
 set guioptions-=T                                     " remove toolbar from gvim
 set guioptions-=L                                    " hide left-hand scroollbar
@@ -275,3 +275,11 @@ endfunction
 
 " NB: this supports "rp that replaces the selection by the contents of @r
 vnoremap <silent> <expr> p <sid>Repl()
+
+
+" NOTES:
+" YouCompleteMe can get annoying
+" <leader>jd : jump to definition
+" Ctrl-o : jump back
+" NERDTree Shift-i : hide dotfiles
+" NERDTree Shift-C+r : set current node as root
