@@ -21,6 +21,7 @@ Plug 'cakebaker/scss-syntax.vim', { 'for': 'scss' }
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'JamshedVesuna/vim-markdown-preview', { 'for': 'markdown' }
 Plug 'fatih/vim-go', { 'for': 'go' }
+Plug 'gregsexton/MatchTag', { 'for': 'html' }
 "
 " " Completion
 " Plug 'mattn/emmet-vim', { 'for': 'html' }
