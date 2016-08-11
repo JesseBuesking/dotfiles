@@ -192,7 +192,7 @@ syntax on
 :set number
 
 " ignore files in NERDTree
-let NERDTreeIgnore=['\.pyc$', '__pycache__', '.ropeproject', '.cache', '.git']
+let NERDTreeIgnore=['\.pyc$', '__pycache__', '.ropeproject', '.cache', '.git', 'bower_components', 'node_modules']
 let NERDTreeShowHidden=1                                       " show .gitignore
 set guioptions-=T                                     " remove toolbar from gvim
 set guioptions-=L                                    " hide left-hand scroollbar
@@ -200,38 +200,23 @@ set guioptions-=r                                   " hide right-hand scroollbar
 
 " speed up ctrlp by ignoring certain files
 if executable('ag')
+    set grepprg=ag\ --nogroup\ --nocolor
     let g:ctrlp_user_command = {
         \ 'types': {
             \ 1: ['.git', 'cd %s && git ls-files'],
             \ 2: ['.hg', 'hg --cwd %s locate -I .'],
             \ },
-        \ 'fallback': 'ag %s -i --nocolor --nogroup --hidden --ignore out --ignore .git --ignore .svn --ignore .hg --ignore .DS_Store --ignore "**/*.pyc" -g ""'
+        \ 'fallback': 'ag -i --nocolor --nogroup --hidden --ignore out --ignore .git --ignore .svn --ignore .hg --ignore .DS_Store --ignore "**/*.pyc" --ignore bower_components --ignore node_modules -g ""'
         \ }
+    let g:ackprg = 'ag -i --nocolor --nogroup --hidden --ignore out --ignore .git --ignore .svn --ignore .hg --ignore .DS_Store --ignore "**/*.pyc" --ignore bower_components --ignore node_modules'
 else
     let g:ctrlp_user_command = {
         \ 'types': {
             \ 1: ['.git', 'cd %s && git ls-files'],
             \ 2: ['.hg', 'hg --cwd %s locate -I .'],
             \ },
-        \ 'fallback': 'find %s -type f -not -path out -not -path .git -not -path .svn -not -path .hg -not -path .DS_Store -not -path "**/*.pyc"'
+        \ 'fallback': 'find %s -type f -not -path out -not -path .git -not -path .svn -not -path .hg -not -path .DS_Store -not -path "**/*.pyc" -not -path bower_components -not -path node_modules'
         \ }
-endif
-
-
-" speed up ctrlp by using ag -- https://github.com/ggreer/the_silver_searcher
-if executable('ag')
-  " Use Ag over Grep
-  set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  unlet g:ctrlp_user_command
-  let g:ctrlp_user_command='ag %s -l --nocolor -g ""'
-endif
-
-" Ack.vim
-if executable('ag')
-  " let g:ackprg = 'ag --vimgrep'
-  let g:ackprg = 'ag'
 endif
 
 " sane folding by default -- necessary for python-mode
