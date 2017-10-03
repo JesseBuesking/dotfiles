@@ -6,12 +6,8 @@
   "Configuration Layers declaration.
 You should not put any user code in this function besides modifying the variable
 values."
-
   (setq-default
    ;; custom additions
-   ;; NOTE these don't seem to work
-   ;; dotspacemacs-configuration-layers '((syntax-checking :variables syntax-checking-enable-by-default nil))
-   ;; dotspacemacs-configuration-layers '((syntax-checking :variables syntax-checking-enable-tooltips nil))
    ;; Base distribution to use. This is a layer contained in the directory
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
@@ -141,12 +137,15 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(ujelly
-                         doom-one
-                         spacemacs-dark
-                         zenburn
-                         solarized-dark
-                         spacemacs-light)
+   dotspacemacs-themes
+   '(
+     doom-one
+     spacemacs-light
+     solarized-dark
+     spacemacs-dark
+     zenburn
+     ujelly
+     )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -351,6 +350,15 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (defun jesse/org-config ()
   ;; define the location of the file to hold tasks
+
+  ;; see https://writequit.org/denver-emacs/presentations/2017-04-11-time-clocking-with-org.html
+  ;; , I - clock in
+  ;; , O - clock out
+  ;; , f - set effort
+  ;; , : - set tag
+  ;; C-c C-x C-c - enter column mode
+  ;; C-c C-x C-r - compute clock times
+
   (define-key global-map "\C-cc" 'org-capture)
 
   (setq org-directory "~/org")
@@ -369,8 +377,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
            "* %? :IDEA:\n  %U\n  %a")
           ("j" "Journal" entry
            (file+datetree org-default-journal-file)
-           "* %?\n  %U\n  %a")))
-
+           "* %?\n  %U\n  %a")
+          ))
   ;; agenda
   (setq org-agenda-files (list org-directory))
   (setq org-agenda-skip-scheduled-if-done t)
@@ -384,6 +392,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
                               ("@home" . ?H)
                               (:endgroup)
                               ("WAITING" . ?w)
+                              ("INREVIEW" . ?r)
                               ("HOLD" . ?h)
                               ("IDEA" . ?i)
                               ("PERSONAL" . ?P)
@@ -397,6 +406,15 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq org-todo-keywords
      '((sequence "TODO" "DOING" "WAITING" "|" "DONE" "CANCELED")))
 
+  ;; must mark children ask complete first
+  (setq org-enforce-todo-dependencies t)
+  ;; timestamp status changes
+  (setq org-log-done (quote time))
+  ;; track if you extended the deadline on something
+  (setq org-log-redeadline (quote time))
+  ;; same, but for scheduled tasks
+  (setq org-log-reschedule (quote time))
+
   ;; refiling
   (setq org-refile-targets '((nil :maxlevel . 9)
 			                       (org-agenda-files :maxlevel . 9)))
@@ -408,6 +426,20 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   ;; start in insert mode when adding a capture
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
+
+  ;; Agenda clock report parameters
+  (setq org-agenda-clockreport-parameter-plist
+        '(:link t :maxlevel 4 :fileskip0 t :compact t :narrow 80 :score 0))
+
+  ;; global Effort estimate values
+  (setq org-global-properties
+        '(("Effort_ALL" .
+           "0:30 1:00 2:00 4:00 6:00 8:00 16:00 24:00 32:00 40:00")))
+
+  ;; Set default column view headings: Task Priority Effort Clock_Summary
+  (setq org-columns-default-format "%50ITEM(Task) %2PRIORITY %10Effort(Effort){:} %10CLOCKSUM")
+
+  (setq org-bullets-bullet-list '("◉" "○" "■" "▶"))
 )
 
 (defun jesse/flyspell-config ()
@@ -519,6 +551,7 @@ you should place your code here."
   ;; Make linums relative by default
   (global-linum-mode nil)
   (linum-relative-toggle)
+  (setq term-buffer-maximum-size 0)
 
   (jesse/csv-sort)
   (jesse/org-config)
@@ -558,16 +591,6 @@ you should place your code here."
   (eval-after-load 'evil-ex
     '(evil-ex-define-cmd "A" 'ruby-test-toggle-implementation-and-specification))
 
-  ;; (define-key evil-inner-text-objects-map "l" 'evil-inner-line)
-
-  ;; ;;;###autoload
-  ;; (eval-after-load 'evil
-  ;;   '(progn
-  ;;      (autoload 'evil-a-line "evil-textobj-line" nil t)
-  ;;      (autoload 'evil-inner-line "evil-textobj-line" nil t)
-  ;;      (define-key evil-inner-text-objects-map "l" 'evil-inner-line)
-  ;;      (define-key evil-outer-text-objects-map "l" 'evil-a-line)))
-
   ;; same as netrw binding
   (define-key evil-normal-state-map (kbd "-") 'dired-jump)
   ;; use to create new files
@@ -602,6 +625,15 @@ you should place your code here."
    web-mode-css-indent-offset 2
    web-mode-code-indent-offset 2
    web-mode-attr-indent-offset 2)
+
+  ;; babel
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               '(
+                                 (emacs-lisp . t)
+                                 (ruby . t)
+                                 (sh . t)
+                                 (shell . t)
+                                 ))
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -613,13 +645,15 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
+ '(helm-ag-base-command "pt -e --nocolor --nogroup")
+ '(org-agenda-files (quote ("~/org/timelog.org" "~/org/tasks.org")))
  '(package-selected-packages
    (quote
-    (lemon-mode sql-indent insert-shebang fish-mode disaster csv-mode company-shell company-c-headers cmake-mode clang-format pt wgrep-ag wgrep ag yaml-mode doom-dark-theme js2-refactor helm-company helm-c-yasnippet company-web web-completion-data company-tern tern company-statistics company-anaconda auto-yasnippet yapfify web-mode web-beautify unfill twittering-mode tagedit slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv pyvenv pytest pyenv-mode py-isort pug-mode projectile-rails rake inflections pip-requirements mwim minitest livid-mode skewer-mode simple-httpd live-py-mode less-css-mode json-mode json-snatcher json-reformat multiple-cursors js2-mode js-doc hy-mode dash-functional helm-pydoc helm-css-scss haml-mode fuzzy flyspell-correct-helm flyspell-correct feature-mode emmet-mode cython-mode company coffee-mode chruby bundler inf-ruby yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
- '(tramp-syntax (quote default)))
+    (sql-indent lemon-mode insert-shebang fish-mode disaster csv-mode company-shell company-c-headers cmake-mode clang-format ox-twbs ox-reveal ox-gfm pt wgrep-ag wgrep ag yaml-mode doom-dark-theme js2-refactor helm-company helm-c-yasnippet company-web web-completion-data company-tern tern company-statistics company-anaconda auto-yasnippet yapfify web-mode web-beautify unfill twittering-mode tagedit slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv pyvenv pytest pyenv-mode py-isort pug-mode projectile-rails rake inflections pip-requirements mwim minitest livid-mode skewer-mode simple-httpd live-py-mode less-css-mode json-mode json-snatcher json-reformat multiple-cursors js2-mode js-doc hy-mode dash-functional helm-pydoc helm-css-scss haml-mode fuzzy flyspell-correct-helm flyspell-correct feature-mode emmet-mode cython-mode company coffee-mode chruby bundler inf-ruby yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+ '(tramp-syntax (quote default) nil (tramp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#000000")))))
+ '(default ((((class color) (min-colors 257)) nil) (((class color) (min-colors 89)) (:background "#1c1c1c" :foreground "#eeeeee")))))
