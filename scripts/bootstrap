@@ -2,7 +2,7 @@
 #
 # bootstrap installs things.
 
-cd "$(dirname "$0")/.."
+#cd "$(dirname "$0")/.."
 DOTFILES_ROOT=$(pwd -P)
 
 set -e
@@ -30,13 +30,13 @@ fail () {
 source scripts/git/setup-gitconfig
 setup_gitconfig
 
-source scripts/anaconda/setup-anaconda
-source scripts/anaconda/setup-anaconda-packages
-setup_anaconda
-setup_anaconda_packages
+#source scripts/anaconda/setup-anaconda
+#source scripts/anaconda/setup-anaconda-packages
+#setup_anaconda
+#setup_anaconda_packages
 
-source scripts/python/setup-python
-setup_python
+#source scripts/python/setup-python
+#setup_python
 
 source scripts/zsh/setup-antigen
 setup_antigen
