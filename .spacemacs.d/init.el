@@ -41,7 +41,10 @@ values."
      helm
      javascript
      markdown
-     org
+     (org :variables
+          org-enable-github-support t
+          org-enable-bootstrap-support t
+          org-enable-reveal-js-support t)
      python
      react
      ruby
@@ -49,7 +52,9 @@ values."
      shell-scripts
      spell-checking
      sql
-     syntax-checking
+     (syntax-checking :variables
+                      syntax-checking-enable-by-default nil
+                      syntax-checking-enable-tooltips nil)
      twitter
      vinegar
      yaml
@@ -63,6 +68,7 @@ values."
      ag ;; the silver searcher
      lemon-mode
      pt ;; the platinum searcher
+     ;; ruby-hash-syntax ;; doesn't seem to work
      wgrep-ag
      )
    ;; A list of packages that cannot be updated.
@@ -309,7 +315,8 @@ values."
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
-   ))
+   )
+  )
 
 (defun dotspacemacs/user-init ()
   "Initialization function for user code.
@@ -541,6 +548,103 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (define-key evil-inner-text-objects-map evil-textobj-line-i-key 'evil-inner-line)
   )
 
+(defun jesse/js-config ()
+  ;; see http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
+
+
+  ;; use web-mode for .jsx files
+  (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+
+  ;; disable jshint since we prefer eslint checking
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+
+  ;; disable json-jsonlist checking for json files
+  (setq-default flycheck-disabled-checker
+                (append flycheck-disabled-checkers
+                        '(json-jsonlist)))
+
+  (setq-default flycheck-checkers
+                '(javascript-eslint))
+
+  ;; use eslint with web-mode for jsx files
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+
+  ;; customize flycheck temp file prefix
+  (setq-default flycheck-temp-prefix ".flycheck")
+
+  ;; https://github.com/purcell/exec-path-from-shell
+  ;; only need exec-path-from-shell on OSX
+  ;; this hopefully sets up path and other vars better
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))
+
+  ;; use local eslint from node_modules before global
+  ;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+  (defun jesse/use-eslint-from-node-modules ()
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (and root
+                        (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                          root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flycheck-javascript-eslint-executable eslint))))
+  (add-hook 'flycheck-mode-hook #'jesse/use-eslint-from-node-modules)
+
+  ;; adjust indents for web-mode to 2 spaces
+
+  (defun jesse/web-mode-hook ()
+    "Hooks for Web mode. Adjust indents"
+
+    ;;; http://web-mode.org/
+    (setq-default
+     ;; js2-mode
+     js2-basic-offset 2
+     ;; web-mode
+     css-indent-offset 2
+     web-mode-markup-indent-offset 2
+     web-mode-css-indent-offset 2
+     web-mode-code-indent-offset 2
+     web-mode-attr-indent-offset 2
+     ))
+  (add-hook 'web-mode-hook #'jesse/web-mode-hook)
+
+  ;; for better jsx syntax-highlighting in web-mode
+  ;; - courtesy of Patrick @halbtuerke
+  (defadvice web-mode-highlight-part (around tweak-jsx activate)
+    (if (equal web-mode-content-type "jsx")
+        (let ((web-mode-enable-part-face nil))
+          ad-do-it)
+      ad-do-it))
+
+  ;; set js and jsx indentations
+
+  (defun jesse/json-mode-hook ()
+    (setq-default
+     js-indent-level 2
+     tab-width 2
+     json-reformat:indent-width 2
+     ))
+  (add-hook 'json-mode-hook 'jesse/json-mode-hook)
+
+  (defun jesse/reset-eslint-rc ()
+    (let ((rc-path (if (projectile-project-p)
+                       (concat (projectile-project-root) "client/.eslintrc.json"))))
+      (if (file-exists-p rc-path)
+          (progn
+            (message "Setting rc-path variable to '%s'." rc-path)
+            (setq flycheck-eslintrc rc-path)))))
+
+  (add-hook 'flycheck-mode-hook #'jesse/reset-eslint-rc)
+
+  ;; enable in react, scss, and sass modes mode
+  (add-hook 'react-mode-hook 'flycheck-mode)
+  (add-hook 'scss-mode-hook 'flycheck-mode)
+  (add-hook 'sass-mode-hook 'flycheck-mode)
+  )
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -559,6 +663,7 @@ you should place your code here."
   (jesse/platinum-searcher-config)
   (jesse/ripper-tags)
   (jesse/evil-inner-line)
+  (jesse/js-config)
 
   (custom-set-variables
    '(helm-ag-base-command "pt -e --nocolor --nogroup"))
@@ -593,14 +698,18 @@ you should place your code here."
 
   ;; same as netrw binding
   (define-key evil-normal-state-map (kbd "-") 'dired-jump)
+
   ;; use to create new files
+  (require 'dired-x)
   (define-key dired-mode-map "c" 'helm-find-files)
 
-  ;; (setq projectile-tags-command "etags -o \"%s\" %s")
+  ;; TODO get this to work
+  ;; (defun jesse/dired-config ()
+  ;;   (progn
+  ;;     (evilified-state-evilify dired-mode dired-mode-map
+  ;;       "c" 'helm-find-files)))
 
-  (add-hook 'ruby-mode-hook
-            (lambda ()
-              (push '(?| . ("|" . "|")))))
+  ;; (add-hook 'ruby-mode-hook 'jesse/dired-config)
 
   ;; (evil-define-key 'normal key-translation-map (kbd "c") (kbd "f"))
   ;; (evil-define-key 'normal evil-org-mode-map
@@ -615,23 +724,17 @@ you should place your code here."
   ;;             (setq diredp-hide-details-propagate-flag nil))
   ;;           )
 
-  ;; set js and jsx indentations
-  (setq-default
-   ;; js2-mode
-   js2-basic-offset 2
-   ;; web-mode
-   css-indent-offset 2
-   web-mode-markup-indent-offset 2
-   web-mode-css-indent-offset 2
-   web-mode-code-indent-offset 2
-   web-mode-attr-indent-offset 2)
+  ;; (setq projectile-tags-command "etags -o \"%s\" %s")
+
+  (add-hook 'ruby-mode-hook
+            (lambda ()
+              (push '(?| . ("|" . "|")))))
 
   ;; babel
   (org-babel-do-load-languages 'org-babel-load-languages
                                '(
                                  (emacs-lisp . t)
                                  (ruby . t)
-                                 (sh . t)
                                  (shell . t)
                                  ))
 )
@@ -649,7 +752,7 @@ you should place your code here."
  '(org-agenda-files (quote ("~/org/timelog.org" "~/org/tasks.org")))
  '(package-selected-packages
    (quote
-    (sql-indent lemon-mode insert-shebang fish-mode disaster csv-mode company-shell company-c-headers cmake-mode clang-format ox-twbs ox-reveal ox-gfm pt wgrep-ag wgrep ag yaml-mode doom-dark-theme js2-refactor helm-company helm-c-yasnippet company-web web-completion-data company-tern tern company-statistics company-anaconda auto-yasnippet yapfify web-mode web-beautify unfill twittering-mode tagedit slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv pyvenv pytest pyenv-mode py-isort pug-mode projectile-rails rake inflections pip-requirements mwim minitest livid-mode skewer-mode simple-httpd live-py-mode less-css-mode json-mode json-snatcher json-reformat multiple-cursors js2-mode js-doc hy-mode dash-functional helm-pydoc helm-css-scss haml-mode fuzzy flyspell-correct-helm flyspell-correct feature-mode emmet-mode cython-mode company coffee-mode chruby bundler inf-ruby yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+    (ruby-hash-syntax sql-indent lemon-mode insert-shebang fish-mode disaster csv-mode company-shell company-c-headers cmake-mode clang-format ox-twbs ox-reveal ox-gfm pt wgrep-ag wgrep ag yaml-mode doom-dark-theme js2-refactor helm-company helm-c-yasnippet company-web web-completion-data company-tern tern company-statistics company-anaconda auto-yasnippet yapfify web-mode web-beautify unfill twittering-mode tagedit slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv pyvenv pytest pyenv-mode py-isort pug-mode projectile-rails rake inflections pip-requirements mwim minitest livid-mode skewer-mode simple-httpd live-py-mode less-css-mode json-mode json-snatcher json-reformat multiple-cursors js2-mode js-doc hy-mode dash-functional helm-pydoc helm-css-scss haml-mode fuzzy flyspell-correct-helm flyspell-correct feature-mode emmet-mode cython-mode company coffee-mode chruby bundler inf-ruby yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
  '(tramp-syntax (quote default) nil (tramp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
