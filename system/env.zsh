@@ -2,7 +2,7 @@
 # Personal python repositories
 # ==============================================================================
 PYTHONREPOS="$HOME/repositories/python"
-export PYTHONPATH="$PYTHONREPOS/bbds:$PYTHONREPOS/pylearn2:$PYTHONREPOS/suggs:$PYTHONREPOS/python_speech_features:$PYTHONREPOS/sloth:$PYTHONPATH:$PYTHONREPOS/search:$PYTHONPATH:$PYTHONREPOS/ranker"
+export PYTHONPATH="$PYTHONREPOS/bbds:$PYTHONREPOS/pylearn2:$PYTHONREPOS/suggs:$PYTHONREPOS/python_speech_features:$PYTHONREPOS/sloth:$PYTHONPATH:$PYTHONREPOS/search:$PYTHONPATH:$PYTHONREPOS/ranker:$PYTHONREPOS/summarizer"
 
 # ==============================================================================
 # Project specific exports

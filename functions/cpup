@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Usage: cpup ondemand/performance
+# Description: sets cpu performance level
+for ((i=0;i<$(nproc);i++)); do cpufreq-set -c $i -r -g performance; done
+
+cpup () {
+    PERFMODE=$1
+    case ${PERFMODE} in
+        performance)  ;;
+        ondemand)     ;;
+        *) echo "'${PERFMODE}' is not a valid performance mode"; return;;
+    esac
+
+    for ((i=0;i<$(nproc);i++)); do sudo cpufreq-set -c $i -r -g ${PERFMODE}; done
+}

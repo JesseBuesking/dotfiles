@@ -7,6 +7,9 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+
 " Colorschemes
 Plug 'captbaritone/molokai'
 Plug 'chriskempson/vim-tomorrow-theme'
@@ -14,6 +17,7 @@ Plug 'altercation/vim-colors-solarized'
 Plug 'fxn/vim-monochrome'
 Plug 'chriskempson/base16-vim'
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'dracula/vim'
 "
 " Syntax
 Plug 'tpope/vim-git', { 'for': 'git' }
@@ -22,6 +26,9 @@ Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'JamshedVesuna/vim-markdown-preview', { 'for': 'markdown' }
 Plug 'fatih/vim-go', { 'for': 'go' }
 Plug 'gregsexton/MatchTag', { 'for': 'html' }
+
+Plug 'tpope/vim-surround'
+
 "
 " " Completion
 " Plug 'mattn/emmet-vim', { 'for': 'html' }
@@ -109,7 +116,7 @@ Plug 'jistr/vim-nerdtree-tabs'
 Plug 'scrooloose/syntastic'                               " syntax check on save
 Plug 'nvie/vim-flake8'                                            " pep8 support
 
-Plug 'ctrlpvim/ctrlp.vim'
+"Plug 'ctrlpvim/ctrlp.vim'
 " Plug 'wincent/command-t'
 
 Plug 'klen/python-mode'
@@ -159,6 +166,20 @@ cnoremap <C-S-Tab> <C-C>:tabprevious<CR>
 " map ctrl-shift-f to ack -- all files from current directory search
 nnoremap <C-S-f> :Ack 
 
+" see http://stackoverflow.com/a/6271254/435460
+function! s:get_visual_selection()
+      " Why is this not a built-in Vim script function?!
+      let [lnum1, col1] = getpos("'<")[1:2]
+      let [lnum2, col2] = getpos("'>")[1:2]
+      let lines = getline(lnum1, lnum2)
+      let lines[-1] = lines[-1][: col2 - (&selection == 'inclusive' ? 1 : 2)]
+      let lines[0] = lines[0][col1 - 1:]
+      return join(lines, "\n")
+  endfunction
+
+" see http://stackoverflow.com/a/28011266/435460
+vnoremap <C-S-f> y:Ack "<C-r>=<SID>get_visual_selection()<CR>"
+
 " improve default / search
 " map  / <Plug>(easymotion-sn)
 " omap / <Plug>(easymotion-tn)
@@ -178,7 +199,10 @@ set colorcolumn=81
 highlight ColorColumn ctermbg=darkgray
 
 " color scheme settings
-colorscheme PaperColor
+let g:solarized_termcolors=256
+colorscheme solarized
+set background=light
+"colorscheme PaperColor
 set background=dark
 if has('gui_running')
     set background=dark
@@ -269,3 +293,25 @@ vnoremap <silent> <expr> p <sid>Repl()
 " Ctrl-o : jump back
 " NERDTree Shift-i : hide dotfiles
 " NERDTree Shift-C+r : set current node as root
+
+let g:ycm_global_ycm_extra_conf = '~/.vim/plugged/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+
+" Customize fzf colors to match your color scheme
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+" complete line
+imap <c-x><c-l> <plug>(fzf-complete-line)
+" replace ctrl-P
+nnoremap <c-p> :FZF<cr>

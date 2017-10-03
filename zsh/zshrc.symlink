@@ -57,3 +57,11 @@ if [ "$COLORTERM" = "gnome-terminal" ]
 then
     export TERM=gnome-256color
 fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+ulimit -c unlimited
+export PATH=~/.local/bin:$PATH
+
+alias nshared="cd /nfs/Data/ORGANIZED/personal/shared"
+export PATH=/usr/local/java/jre1.8.0_144/bin:$PATH
