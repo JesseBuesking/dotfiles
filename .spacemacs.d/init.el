@@ -56,6 +56,7 @@ values."
                       syntax-checking-enable-by-default nil
                       syntax-checking-enable-tooltips nil)
      twitter
+     vimscript
      vinegar
      yaml
      )
@@ -307,7 +308,7 @@ values."
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
    ;; (default '("ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("pt" "ag" "ack" "grep")
    ;; The default package repository used if no explicit repository has been
    ;; specified with an installed package.
    ;; Not used for now. (default nil)
@@ -668,7 +669,6 @@ you should place your code here."
     (defalias #'forward-evil-word #'forward-evil-symbol))
 
   (evil-select-search-module 'evil-search-module 'evil-search)
-
   (setq evil-search-module 'evil-search)
 
   (custom-set-variables
@@ -699,6 +699,8 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "C-w C-h") 'evil-window-left)
   (define-key evil-normal-state-map (kbd "C-w l") 'evil-window-right)
   (define-key evil-normal-state-map (kbd "C-w C-l") 'evil-window-right)
+  (define-key evil-normal-state-map (kbd "gn") 'evil-ex-search-forward)
+  (define-key evil-normal-state-map (kbd "gN") 'evil-ex-search-backward)
   (eval-after-load 'evil-ex
     '(evil-ex-define-cmd "A" 'ruby-test-toggle-implementation-and-specification))
 
@@ -773,7 +775,7 @@ you should place your code here."
  '(org-agenda-files (quote ("~/org/timelog.org" "~/org/tasks.org")))
  '(package-selected-packages
    (quote
-    (rjsx-mode ruby-refactor ruby-hash-syntax sql-indent lemon-mode insert-shebang fish-mode disaster csv-mode company-shell company-c-headers cmake-mode clang-format ox-twbs ox-reveal ox-gfm pt wgrep-ag wgrep ag yaml-mode doom-dark-theme js2-refactor helm-company helm-c-yasnippet company-web web-completion-data company-tern tern company-statistics company-anaconda auto-yasnippet yapfify web-mode web-beautify unfill twittering-mode tagedit slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv pyvenv pytest pyenv-mode py-isort pug-mode projectile-rails rake inflections pip-requirements mwim minitest livid-mode skewer-mode simple-httpd live-py-mode less-css-mode json-mode json-snatcher json-reformat multiple-cursors js2-mode js-doc hy-mode dash-functional helm-pydoc helm-css-scss haml-mode fuzzy flyspell-correct-helm flyspell-correct feature-mode emmet-mode cython-mode company coffee-mode chruby bundler inf-ruby yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+    (vimrc-mode dactyl-mode rjsx-mode ruby-refactor ruby-hash-syntax sql-indent lemon-mode insert-shebang fish-mode disaster csv-mode company-shell company-c-headers cmake-mode clang-format ox-twbs ox-reveal ox-gfm pt wgrep-ag wgrep ag yaml-mode doom-dark-theme js2-refactor helm-company helm-c-yasnippet company-web web-completion-data company-tern tern company-statistics company-anaconda auto-yasnippet yapfify web-mode web-beautify unfill twittering-mode tagedit slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv pyvenv pytest pyenv-mode py-isort pug-mode projectile-rails rake inflections pip-requirements mwim minitest livid-mode skewer-mode simple-httpd live-py-mode less-css-mode json-mode json-snatcher json-reformat multiple-cursors js2-mode js-doc hy-mode dash-functional helm-pydoc helm-css-scss haml-mode fuzzy flyspell-correct-helm flyspell-correct feature-mode emmet-mode cython-mode company coffee-mode chruby bundler inf-ruby yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
  '(tramp-syntax (quote default) nil (tramp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
