@@ -555,18 +555,17 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun jesse/js-config ()
   ;; see http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
 
-  ;; disable jshint since we prefer eslint checking
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
                         '(javascript-jshint)))
 
-  ;; disable json-jsonlist checking for json files
-  (setq-default flycheck-disabled-checker
+  (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
                         '(json-jsonlist)))
 
   (setq-default flycheck-checkers
-                '(javascript-eslint))
+                (append flycheck-checkers
+                        '(json-jsonlist)))
 
   ;; use eslint with web-mode for jsx files
   (flycheck-add-mode 'javascript-eslint 'web-mode)
@@ -628,12 +627,13 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq js2-strict-trailing-comma-warning nil)
 
   (defun jesse/reset-eslint-rc ()
-    (let ((rc-path (if (projectile-project-p)
-                       (concat (projectile-project-root) "client/.eslintrc.json"))))
-      (if (file-exists-p rc-path)
-          (progn
-            (message "Setting rc-path variable to '%s'." rc-path)
-            (setq flycheck-eslintrc rc-path)))))
+    (when (eq major-mode 'rjsx-mode-hook)
+      (let ((rc-path (if (projectile-project-p)
+                        (concat (projectile-project-root) "client/.eslintrc.json"))))
+        (if (file-exists-p rc-path)
+            (progn
+              (message "Setting rc-path variable to '%s'." rc-path)
+              (setq flycheck-eslintrc rc-path))))))
 
   (add-hook 'flycheck-mode-hook #'jesse/reset-eslint-rc)
 
@@ -663,6 +663,11 @@ you should place your code here."
   (jesse/ripper-tags)
   (jesse/evil-inner-line)
   (jesse/js-config)
+
+  ;; disable json-jsonlist checking for json files
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(ruby-reek)))
 
   ;; Make underscores part of ruby words.
   (with-eval-after-load 'evil
