@@ -32,30 +32,39 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     html
      auto-completion
      better-defaults
      c-c++
+     clojure
      csv
+     ;; elpy
      emacs-lisp
      git
      helm
      javascript
+     latex
      markdown
+     nose
      (org :variables
-          org-enable-github-support t
-          org-enable-bootstrap-support t
-          org-enable-reveal-js-support t)
+          org-enable-github-support nil
+          org-enable-bootstrap-support nil
+          org-enable-reveal-js-support t) ;; slows startup
+     ;; osx
+     pandoc
      python
      ;; react
      ruby
+     ;; (ruby :variables
+     ;;       ruby-enable-enh-ruby-mode t)
      ruby-on-rails
      shell-scripts
      spell-checking
      sql
      (syntax-checking :variables
-                      syntax-checking-enable-by-default nil
+                      syntax-checking-enable-by-default t
                       syntax-checking-enable-tooltips nil)
-     twitter
+     ;; twitter
      vimscript
      vinegar
      yaml
@@ -74,6 +83,9 @@ values."
      ;; ruby-hash-syntax ;; doesn't seem to work
      ruby-refactor
      wgrep-ag
+     ;; realgud
+     ;; realgud-pry
+     ;; realgud-byebug
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -149,8 +161,12 @@ values."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes
    '(
-     doom-one
+     ;; sunburn
+     solarized-light
+     material-light
+     espresso
      spacemacs-light
+     doom-one
      solarized-dark
      spacemacs-dark
      zenburn
@@ -248,7 +264,7 @@ values."
    dotspacemacs-loading-progress-bar t
    ;; If non nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup t
+   dotspacemacs-fullscreen-at-startup nil
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
    dotspacemacs-fullscreen-use-non-native t
@@ -331,6 +347,17 @@ before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
   (add-to-list 'auto-mode-alist '("\\.re\\'" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.yy\\'" . lemon-mode))
+
+  (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                           ("melpa" . "https://elpa.zilongshanren.com/")))
+  ;; (setq package-archives
+  ;;       '(("melpa" . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/melpa/")
+  ;;         ("org"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/org/")
+  ;;         ("gnu"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/gnu/")))
+  (setq configuration-layer--elpa-archives
+        '(("melpa" . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/melpa/")
+          ("org"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/org/")
+          ("gnu"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/gnu/")))
   )
 
 (defun jesse/csv-sort ()
@@ -461,6 +488,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
       (when (consp word)
         (flyspell-do-correct 'save nil (car word) current-location (cadr word) (caddr word) current-location))))
 
+  (setq ispell-program-name "aspell")
+
   ;; add word to the dictionary using "SPC a w"
   (spacemacs/set-leader-keys "aw" 'add-word)
   )
@@ -478,7 +507,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   )
 
 (defun jesse/ripper-tags ()
-  (defun update-ripper-tags ()
+  (defun jesse/update-ripper-tags ()
     "Updates the TAGS file for the current project."
     (interactive)
     ;; Only update TAGS when a ruby file is edited and saved.
@@ -495,9 +524,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
       ))
 
   ;; Override the projectile generate tags keybinding.
-  (define-key evil-normal-state-map (kbd "SPC p G") 'update-ripper-tags)
-  ;; Automatically update when a file is saved (only happens when contents change).
-  (add-hook 'after-save-hook 'update-ripper-tags)
+  (define-key evil-normal-state-map (kbd "SPC p G") 'jesse/update-ripper-tags)
+
+  ;; ;; Automatically update when a file is saved (only happens when contents change).
+  ;; (add-hook 'after-save-hook 'jesse/update-ripper-tags)
   )
 
 (defmacro define-and-bind-text-object (key start-regex end-regex)
@@ -551,6 +581,26 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (define-key evil-outer-text-objects-map evil-textobj-line-a-key 'evil-a-line)
   (define-key evil-inner-text-objects-map evil-textobj-line-i-key 'evil-inner-line)
   )
+
+(defun jesse/python-config ()
+  (add-hook 'python-mode-hook '(lambda ()
+    (flycheck-mode 1)
+    (semantic-mode 1)
+    (setq flycheck-checker 'python-pylint
+          flycheck-checker-error-threshold 900
+          flycheck-pylintrc (concat (projectile-project-root) ".pylintrc")
+          python-indent 2
+          indent-tabs-mode nil
+          tab-width 2
+          evil-shift-width python-indent)))
+  )
+
+(defun hogwarts/make-dev-sync ()
+  "Runs make dev-sync from the project root."
+  (interactive)
+  (let ((default-directory (projectile-project-root)))
+    ;;(message (shell-command-to-string "echo $PWD"))
+    (message (shell-command-to-string "source activate py27 && make dev-sync"))))
 
 (defun jesse/js-config ()
   ;; see http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
@@ -644,6 +694,68 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (add-hook 'sass-mode-hook 'flycheck-mode)
   )
 
+(defun jesse/ruby-config ()
+  ;; (defun jesse/rubocop-rc ()
+  ;;   (when (eq major-mode 'ruby-mode)
+  ;;     (let ((rc-path (if (projectile-project-p)
+  ;;                        (concat (projectile-project-root) ".rubocop.yml"))))
+  ;;       (if (file-exists-p rc-path)
+  ;;           (progn
+  ;;             (message "Setting rc-path variable to '%s'." rc-path)
+  ;;             (setq flycheck-rubocoprc rc-path))))))
+  ;; (add-hook 'flycheck-mode-hook #'jesse/rubocop-rc)
+
+  ;; (setq flycheck-ruby-rubocop-executable "/usr/local/bin/rubocop")
+
+  ;; enable in ruby mode
+  (add-hook 'ruby-mode-hook 'flycheck-mode)
+
+  (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
+
+  ;; can be overbearing, so let's disable it
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(ruby-reek)))
+  )
+
+(defun jesse/global-search (regexp directory)
+  (pt-regexp regexp directory))
+
+
+(defun jesse/global-search (regexp directory)
+  "Run a pt search with REGEXP rooted at DIRECTORY with FILE-FILTER."
+  (interactive (list (read-from-minibuffer "Search for: " (thing-at-point 'symbol))
+                     (read-from-minibuffer "Directory: ")))
+  (message "regexp '%s' directory '%s'" regexp directory)
+  (pt-regexp regexp directory))
+
+(defun toggle-window-split ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+         (next-win-buffer (window-buffer (next-window)))
+         (this-win-edges (window-edges (selected-window)))
+         (next-win-edges (window-edges (next-window)))
+         (this-win-2nd (not (and (<= (car this-win-edges)
+                     (car next-win-edges))
+                     (<= (cadr this-win-edges)
+                     (cadr next-win-edges)))))
+         (splitter
+          (if (= (car this-win-edges)
+             (car (window-edges (next-window))))
+          'split-window-horizontally
+        'split-window-vertically)))
+    (delete-other-windows)
+    (let ((first-win (selected-window)))
+      (funcall splitter)
+      (if this-win-2nd (other-window 1))
+      (set-window-buffer (selected-window) this-win-buffer)
+      (set-window-buffer (next-window) next-win-buffer)
+      (select-window first-win)
+      (if this-win-2nd (other-window 1))))))
+
+(global-set-key (kbd "C-x |") 'toggle-window-split)
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -651,7 +763,6 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  ;; Make linums relative by default
   (global-linum-mode nil)
   (linum-relative-toggle)
   (setq term-buffer-maximum-size 0)
@@ -663,11 +774,16 @@ you should place your code here."
   (jesse/ripper-tags)
   (jesse/evil-inner-line)
   (jesse/js-config)
+  (jesse/python-config)
+  (jesse/ruby-config)
 
-  ;; disable json-jsonlist checking for json files
-  (setq-default flycheck-disabled-checkers
-                (append flycheck-disabled-checkers
-                        '(ruby-reek)))
+  ;; https://emacs.stackexchange.com/questions/31826/does-use-package-keep-packages-automatically-updated/31903#31903
+  ;; (use-package auto-package-update
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq auto-package-update-delete-old-versions t
+  ;;         auto-package-update-interval 14)
+  ;;   (auto-package-update-maybe))
 
   ;; Make underscores part of ruby words.
   (with-eval-after-load 'evil
@@ -679,10 +795,15 @@ you should place your code here."
   (custom-set-variables
    '(helm-ag-base-command "pt -e --nocolor --nogroup"))
 
-  ;; (setq shell-file-name "/bin/sh")
+  (setq shell-file-name "/bin/sh")
 
   ;; create "il"/"al" (inside/around) line text objects:
   ;; (define-and-bind-text-object "l" "^\\s-*" "\\s-*$")
+
+  ;; (define-key evil-normal-state-map (kbd ",q") (hogwarts/make-dev-sync))
+  (global-set-key (kbd "C-0") 'hogwarts/make-dev-sync)
+
+  (define-key evil-normal-state-map (kbd "C-9") 'pytest-module)
 
   (define-key evil-normal-state-map (kbd "H") 'helm-buffers-list)
   (define-key evil-normal-state-map (kbd "C-p") 'helm-projectile-find-file)
@@ -690,6 +811,7 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "C-i") 'evil-jump-forward)
   (define-key evil-normal-state-map (kbd "C-1") 'er/contract-region)
   (define-key evil-normal-state-map (kbd "C-2") 'er/expand-region)
+  ;; (define-key evil-normal-state-map (kbd "C-S-f") 'jesse/global-search)
   (define-key evil-normal-state-map (kbd "C-S-f") 'projectile-pt)
   (define-key evil-normal-state-map (kbd "C-f") 'helm-swoop-symble-pre-input)
   (define-key evil-visual-state-map (kbd "C-f") 'helm-swoop-symble-pre-input)
@@ -706,11 +828,17 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "C-w C-l") 'evil-window-right)
   (define-key evil-normal-state-map (kbd "gn") 'evil-ex-search-forward)
   (define-key evil-normal-state-map (kbd "gN") 'evil-ex-search-backward)
+  ;; (define-key evil-normal-state-map (kbd "C-]") 'jump-to-definition)
   (eval-after-load 'evil-ex
     '(evil-ex-define-cmd "A" 'ruby-test-toggle-implementation-and-specification))
 
   ;; same as netrw binding
   (define-key evil-normal-state-map (kbd "-") 'dired-jump)
+
+  (setq mac-option-key-is-meta nil)
+  (setq mac-command-key-is-meta t)
+  (setq mac-command-modifier 'meta)
+  (setq mac-option-modifier nil)
 
   ;; Wraps functions, setting the register to be used to the black hole register.
   ;; (defun jesse/use-black-hole-register (orig-fn beg end &optional type _ &rest args)
@@ -730,6 +858,7 @@ you should place your code here."
   ;; use to create new files
   (require 'dired-x)
   (define-key dired-mode-map "c" 'helm-find-files)
+  (setq insert-directory-program "gls" dired-use-ls-dired t)
 
   ;; TODO get this to work
   ;; (defun jesse/dired-config ()
@@ -761,10 +890,26 @@ you should place your code here."
   ;; babel
   (org-babel-do-load-languages 'org-babel-load-languages
                                '(
-                                 (emacs-lisp . t)
+                                 (emacs-lisp . nil) ;; slows startup
                                  (ruby . t)
                                  (shell . t)
                                  ))
+
+  (setq projectile-enable-caching t)
+
+  ;; smooth scrolling
+  (setq scroll-margin 5
+        scroll-conservatively 9999
+        scroll-step 1)
+
+  (pyvenv-activate (expand-file-name "~/anaconda3/envs/py27"))
+                   ;; Make linums relative by default
+                   ;; (require 'conda)
+                   ;; ;; if you want interactive shell support, include:
+                   ;; (conda-env-initialize-interactive-shells)
+                   ;; ;; if you want eshell support, include:
+                   ;; (conda-env-initialize-eshell)
+
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -777,10 +922,10 @@ you should place your code here."
  '(ansi-color-names-vector
    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(helm-ag-base-command "pt -e --nocolor --nogroup")
- '(org-agenda-files (quote ("~/org/timelog.org" "~/org/tasks.org")))
+ '(org-agenda-files (quote ("~/org/tasks.org")))
  '(package-selected-packages
    (quote
-    (vimrc-mode dactyl-mode rjsx-mode ruby-refactor ruby-hash-syntax sql-indent lemon-mode insert-shebang fish-mode disaster csv-mode company-shell company-c-headers cmake-mode clang-format ox-twbs ox-reveal ox-gfm pt wgrep-ag wgrep ag yaml-mode doom-dark-theme js2-refactor helm-company helm-c-yasnippet company-web web-completion-data company-tern tern company-statistics company-anaconda auto-yasnippet yapfify web-mode web-beautify unfill twittering-mode tagedit slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv pyvenv pytest pyenv-mode py-isort pug-mode projectile-rails rake inflections pip-requirements mwim minitest livid-mode skewer-mode simple-httpd live-py-mode less-css-mode json-mode json-snatcher json-reformat multiple-cursors js2-mode js-doc hy-mode dash-functional helm-pydoc helm-css-scss haml-mode fuzzy flyspell-correct-helm flyspell-correct feature-mode emmet-mode cython-mode company coffee-mode chruby bundler inf-ruby yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+    (realgud-pry realgud-byebug realgud test-simple loc-changes load-relative reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl pandoc-mode ox-pandoc ht company-auctex auctex clojure-snippets clj-refactor edn paredit peg cider-eval-sexp-fu cider queue clojure-mode ghub auto-package-update enh-ruby-mode vimrc-mode dactyl-mode rjsx-mode ruby-refactor ruby-hash-syntax sql-indent lemon-mode insert-shebang fish-mode disaster csv-mode company-shell company-c-headers cmake-mode clang-format ox-twbs ox-reveal ox-gfm pt wgrep-ag wgrep ag yaml-mode doom-dark-theme js2-refactor helm-company helm-c-yasnippet company-web web-completion-data company-tern tern company-statistics company-anaconda auto-yasnippet yapfify web-mode web-beautify unfill twittering-mode tagedit slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv pyvenv pytest pyenv-mode py-isort pug-mode projectile-rails rake inflections pip-requirements mwim minitest livid-mode skewer-mode simple-httpd live-py-mode less-css-mode json-mode json-snatcher json-reformat multiple-cursors js2-mode js-doc hy-mode dash-functional helm-pydoc helm-css-scss haml-mode fuzzy flyspell-correct-helm flyspell-correct feature-mode emmet-mode cython-mode company coffee-mode chruby bundler inf-ruby yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
  '(tramp-syntax (quote default) nil (tramp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
